@@ -27,16 +27,20 @@ def visualize(results, image):
     sv.plot_image(annotated_image)
 
 def main():
+    #loop images
     for testImage in os.listdir('test_images'):
+        #create path and load
         imPath = os.path.join('test_images', testImage)
         image = cv2.imread(imPath)
         # infer on a local image
         results = CLIENT.infer(imPath, model_id="openspace2/2")
         visualize(results,image)
 
+        #initializing variables
         badgePred = 'None'
         badgeConf = 0
         predictions = results['predictions']
+        #loop through preds to identify the badge prediction and license prediction
         for p in predictions:
             if p['class_id'] not in [15,23]:
                 badgePred = p['class']
@@ -44,8 +48,9 @@ def main():
             elif p['class_id']==15:
                 licensePred = p['class']
                 licenseConf = p['confidence']
+
+        #print results
         print(f'FOR IMAGE: {testImage} \n'
               f'Make: {badgePred} || Confidence: {round(badgeConf*100)}% \n'
               f'License: Detected || Confidence: {round(licenseConf*100)}%\n\n')
-
 main()
